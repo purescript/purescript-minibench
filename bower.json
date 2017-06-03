@@ -1,0 +1,15 @@
+{
+  "name": "purescript-minibench",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "output"
+  ],
+  "dependencies": {
+    "purescript-prelude": "^3.0.0",
+    "purescript-console": "^3.0.0",
+    "purescript-refs": "^3.0.0",
+    "purescript-integers": "^3.0.0"
+  }
+}
