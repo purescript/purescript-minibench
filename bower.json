@@ -6,6 +6,11 @@
     "bower_components",
     "output"
   ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/paf31/purescript-minibench.git"
+  },
   "dependencies": {
     "purescript-prelude": "^3.0.0",
     "purescript-console": "^3.0.0",
