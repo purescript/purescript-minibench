@@ -9,7 +9,8 @@
   "dependencies": {
     "purescript-prelude": "^3.0.0",
     "purescript-console": "^3.0.0",
-    "purescript-refs": "^3.0.0",
-    "purescript-integers": "^3.0.0"
+    "purescript-integers": "^3.0.0",
+    "purescript-st": "^3.0.0",
+    "purescript-partial": "^1.2.0"
   }
 }

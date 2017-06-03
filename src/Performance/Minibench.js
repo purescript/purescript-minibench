@@ -1,9 +1,7 @@
 "use strict";
 
-exports.getTime = function() {
-  return new Date().getTime();
-};
+exports.hrTime = process.hrtime;
 
-exports.toExponential = function(n) {
-  return n.toExponential(3);
+exports.toFixed = function(n) {
+  return n.toFixed(2);
 };

@@ -1,15 +1,24 @@
 module Test.Main where
 
 import Prelude
-import Control.Monad.Eff (Eff, forE)
+import Control.Monad.Eff (Eff)
 import Control.Monad.Eff.Console (CONSOLE, log)
-import Performance.Minibench (bench)
+import Performance.Minibench (bench, benchWith)
 
 main :: forall e. Eff (console :: CONSOLE | e) Unit
 main = do
-  log "forE 1000"
-  bench $ forE 0 1000 (\_ -> pure unit)
-  log "forE 10000"
-  bench $ forE 0 10000 (\_ -> pure unit)
-  log "forE 100000"
-  bench $ forE 0 100000 (\_ -> pure unit)
+  let loop 0 = 0
+      loop n = loop (n - 1)
+
+  log "loop 10"
+  benchWith 1000000 \_ -> loop 10
+  log "loop 100"
+  benchWith 100000 \_ -> loop 100
+  log "loop 1000"
+  bench \_ -> loop 1000
+  log "loop 10000"
+  bench \_ -> loop 10000
+  log "loop 100000"
+  bench \_ -> loop 100000
+  log "loop 1000000"
+  benchWith 100 \_ -> loop 1000000
