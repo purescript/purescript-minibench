@@ -1,7 +1,16 @@
 # purescript-minibench
 
-[![Build Status](https://travis-ci.org/paf31/purescript-minibench.svg?branch=master)](https://travis-ci.org/paf31/purescript-minibench)
+[![Latest release](http://img.shields.io/github/release/purescript/purescript-minibench.svg)](https://github.com/purescript/purescript-minibench/releases)
+[![Build Status](https://travis-ci.org/purescript/purescript-minibench.svg?branch=master)](https://travis-ci.org/purescript/purescript-minibench)
 
-A tiny benchmarking library
+A minimal benchmarking library
 
-Documentation is available [on Pursuit](https://pursuit.purescript.org/packages/purescript-minibench).
+## Installation
+
+```
+bower install purescript-minibench
+```
+
+## Documentation
+
+Module documentation is [published on Pursuit](http://pursuit.purescript.org/packages/purescript-minibench).
