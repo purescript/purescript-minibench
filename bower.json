@@ -16,12 +16,10 @@
     "purescript-console": "^3.0.0",
     "purescript-integers": "^3.0.0",
     "purescript-partial": "^1.2.0",
-    "purescript-aff": "^4.0.0",
     "purescript-arrays": "^4.2.1",
     "purescript-foldable-traversable": "^3.6.1"
   },
   "devDependencies": {
-    "purescript-node-fs": "^4.0.0",
-    "purescript-node-fs-aff": "^5.0.0"
+    "purescript-node-fs": "^4.0.0"
   }
 }

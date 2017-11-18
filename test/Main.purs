@@ -1,14 +1,15 @@
 module Test.Main where
 
 import Prelude
-import Control.Monad.Aff (launchAff)
 import Control.Monad.Eff (Eff)
 import Control.Monad.Eff.Console (CONSOLE, log)
-import Control.Monad.Aff.Console as AffConsole
 import Node.Encoding (Encoding(UTF8))
 import Node.FS (FS)
-import Node.FS.Aff (readTextFile)
-import Performance.Minibench (bench, benchAff, benchWith, benchAffWith)
+import Node.FS.Async (readTextFile)
+import Performance.Minibench (bench, benchAsync, benchAsyncWith, benchWith)
+
+asyncReadFile :: forall e . Eff (fs :: FS | e) Unit -> Eff (fs :: FS | e) Unit
+asyncReadFile done = readTextFile UTF8 "./test/mockFile" \_ -> done
 
 main :: forall e. Eff (console :: CONSOLE, fs :: FS | e) Unit
 main = do
@@ -28,13 +29,9 @@ main = do
   log "loop 1000000"
   benchWith 100 \_ -> loop 1000000
 
-  void $ launchAff do
-    AffConsole.log "bench aff"
-    benchAff $ readTextFile UTF8 "./test/mockFile"
-    AffConsole.log "bench aff triple read"
-    benchAff do
-      _ <- readTextFile UTF8 "./test/mockFile"
-      _ <- readTextFile UTF8 "./test/mockFile"
-      readTextFile UTF8 "./test/mockFile"
-    AffConsole.log "bench aff x10"
-    benchAffWith 10 $ readTextFile UTF8 "./test/mockFile"
+  log "bench aff"
+  benchAsync asyncReadFile do
+    log "bench aff x10"
+    benchAsyncWith 10 asyncReadFile do
+      log "bench aff triple read"
+      benchAsync (asyncReadFile >>> asyncReadFile >>> asyncReadFile) $ pure unit

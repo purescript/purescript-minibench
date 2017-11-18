@@ -8,17 +8,15 @@
 
 module Performance.Minibench
   ( bench
-  , benchAff
-  , benchAffWith
+  , benchAsync
+  , benchAsyncWith
   , benchWith
   ) where
 
-import Control.Monad.Aff (Aff, makeAff, runAff, nonCanceler)
 import Control.Monad.Eff (Eff, runPure)
 import Control.Monad.Eff.Console (CONSOLE, logShow)
 import Control.Monad.Eff.Uncurried (EffFn1, runEffFn1)
 import Data.Array ((..), (:), length)
-import Data.Either (Either(..))
 import Data.Foldable (foldr)
 import Data.Int (toNumber)
 import Global (infinity)
@@ -61,14 +59,14 @@ newtype Results = Results
   }
 
 instance showResults :: Show Results where
-  show (Results results) =
-    "mean   = " <> withUnits results.mean <> "\n" <>
-    "stddev = " <> withUnits results.stddev <> "\n" <>
-    "min    = " <> withUnits results.min' <> "\n" <>
-    "max    = " <> withUnits results.max'
+  show (Results results') =
+    "mean   = " <> withUnits results'.mean <> "\n" <>
+    "stddev = " <> withUnits results'.stddev <> "\n" <>
+    "min    = " <> withUnits results'.min' <> "\n" <>
+    "max    = " <> withUnits results'.max'
 
 -- | Given an array of run timings, calculate the results for the test.
-results :: forall eff . Array Number -> Results
+results :: Array Number -> Results
 results runs = Results {mean, stddev, min', max'}
   where
     sum = foldr (+) 0.0 runs
@@ -118,42 +116,38 @@ bench
   -> Eff (console :: CONSOLE | eff) Unit
 bench = benchWith defaultNumSamples
 
--- | Run an async Aff n times in sequence, calling the callback with the array
--- | of runtimes when all have completed.
+-- | Run an asynchronous function n times sequentially, calling the given
+-- | callback with the array of runtimes after all runs are completed.
 runAsync
   :: forall e a
    . Int
-  -> Aff e a
-  -> (Array Number -> Eff e Unit)
-  -> Eff e Unit
-runAsync n aff done = runAsync' n []
+  -> (Eff (console :: CONSOLE | e) Unit -> Eff (console :: CONSOLE | e) Unit)
+  -> (Array Number -> Eff (console :: CONSOLE | e) Unit)
+  -> Eff (console :: CONSOLE | e) Unit
+runAsync n f done = runAsync' n []
   where
     runAsync' 0 runs = done runs
     runAsync' m runs = do
       t1 <- runEffFn1 hrTime [0, 0]
-      void $ flip runAff aff \_ -> do
+      f do
         t2 <- runEffFn1 hrTime t1
-        runAsync' (m - 1) ((fromHrTime t2):runs)
+        void $ runAsync' (m - 1) ((fromHrTime t2):runs)
 
--- | Estimate the running time of an Aff and print a summary to the console,
--- | specifying the number of samples to take. More samples will give a better
--- | estimate of both mean and standard deviation, but will increase running
--- | time. Returns an Aff, to make it easy to sequence other asynchronous tests
--- | without interleaving the results.
-benchAffWith
+-- | Estimate the running time of an asynchronous function and print a summary
+-- | to the console, specifying the number of samples to take. More samples will
+-- | give a better estimate of both mean and standard deviation, but will
+-- | increase running time.
+benchAsyncWith
   :: forall e a
    . Int
-  -> Aff (console :: CONSOLE | e) a
-  -> Aff (console :: CONSOLE | e) Unit
-benchAffWith n aff = makeAff \success -> do
-  runAsync n aff \runs -> do
-    logShow $ results runs
-    success $ Right unit
-  pure nonCanceler
+  -> (Eff (console :: CONSOLE | e) Unit -> Eff (console :: CONSOLE | e) Unit)
+  -> Eff (console :: CONSOLE | e) Unit
+  -> Eff (console :: CONSOLE | e) Unit
+benchAsyncWith n f done =
+  runAsync n f \runs -> logShow (results runs) >>= \_ -> done
 
--- | Estimate the running time of an Aff monad and print a summary to the
--- | console, by running the Aff 1000 times. Returns an Aff, to make it easy to
--- | sequence other asynchronous tests without interleaving the results.
+-- | Estimate the running time of an asynchronous function and print a summary
+-- | to the console, by running the function 1000 times.
 -- |
 -- | For example:
 -- |
@@ -161,13 +155,14 @@ benchAffWith n aff = makeAff \success -> do
 -- | > import Data.Array
 -- | > import Data.Foldable
 -- | > import Performance.Minibench
--- | > void $ launchAff $ benchAff $ readTextFile UTF8 "someFile"
+-- | > benchAsync \done -> sum (1 .. 10000) >>= \_ -> done
 -- |
 -- | mean   = 414.00 μs
 -- | stddev = 494.82 μs
 -- | ```
-benchAff
+benchAsync
   :: forall e a
-   . Aff (console :: CONSOLE | e) a
-  -> Aff (console :: CONSOLE | e) Unit
-benchAff = benchAffWith defaultNumSamples
+   . (Eff (console :: CONSOLE | e) Unit -> Eff (console :: CONSOLE | e) Unit)
+  -> Eff (console :: CONSOLE | e) Unit
+  -> Eff (console :: CONSOLE | e) Unit
+benchAsync = benchAsyncWith defaultNumSamples
