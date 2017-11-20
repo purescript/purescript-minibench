@@ -155,7 +155,7 @@ benchAsyncWith n f done =
 -- | > import Data.Array
 -- | > import Data.Foldable
 -- | > import Performance.Minibench
--- | > benchAsync \done -> sum (1 .. 10000) >>= \_ -> done
+-- | > benchAsync (\done -> pure (sum (1 .. 10000)) >>= \_ -> done) $ pure unit
 -- |
 -- | mean   = 414.00 μs
 -- | stddev = 494.82 μs
