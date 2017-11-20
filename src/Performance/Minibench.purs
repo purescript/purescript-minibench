@@ -14,7 +14,7 @@ module Performance.Minibench
   ) where
 
 import Control.Monad.Eff (Eff, runPure)
-import Control.Monad.Eff.Console (CONSOLE, logShow)
+import Control.Monad.Eff.Console (CONSOLE, log)
 import Control.Monad.Eff.Uncurried (EffFn1, runEffFn1)
 import Data.Array ((..), (:), length)
 import Data.Foldable (foldr)
@@ -58,12 +58,12 @@ newtype Results = Results
   , max' :: Number
   }
 
-instance showResults :: Show Results where
-  show (Results results') =
-    "mean   = " <> withUnits results'.mean <> "\n" <>
-    "stddev = " <> withUnits results'.stddev <> "\n" <>
-    "min    = " <> withUnits results'.min' <> "\n" <>
-    "max    = " <> withUnits results'.max'
+display :: forall eff. Results -> Eff (console :: CONSOLE | eff) Unit
+display (Results results') = do
+  log $ "mean   = " <> withUnits results'.mean
+  log $ "stddev = " <> withUnits results'.stddev
+  log $ "min    = " <> withUnits results'.min'
+  log $ "max    = " <> withUnits results'.max'
 
 -- | Given an array of run timings, calculate the results for the test.
 results :: Array Number -> Results
@@ -94,7 +94,7 @@ benchWith
    . Int
   -> (Unit -> a)
   -> Eff (console :: CONSOLE | eff) Unit
-benchWith n f = gc >>= \_ -> logShow $ results $ runSync n f
+benchWith n f = gc >>= \_ -> display $ results $ runSync n f
 
 -- | Estimate the running time of a function and print a summary to the console,
 -- | by running the function 1000 times.
@@ -144,7 +144,7 @@ benchAsyncWith
   -> Eff (console :: CONSOLE | e) Unit
   -> Eff (console :: CONSOLE | e) Unit
 benchAsyncWith n f done =
-  runAsync n f \runs -> logShow (results runs) >>= \_ -> done
+  runAsync n f \runs -> display (results runs) >>= \_ -> done
 
 -- | Estimate the running time of an asynchronous function and print a summary
 -- | to the console, by running the function 1000 times.
