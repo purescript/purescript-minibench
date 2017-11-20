@@ -119,7 +119,7 @@ bench = benchWith defaultNumSamples
 -- | Run an asynchronous function n times sequentially, calling the given
 -- | callback with the array of runtimes after all runs are completed.
 runAsync
-  :: forall e a
+  :: forall e
    . Int
   -> (Eff (console :: CONSOLE | e) Unit -> Eff (console :: CONSOLE | e) Unit)
   -> (Array Number -> Eff (console :: CONSOLE | e) Unit)
@@ -138,7 +138,7 @@ runAsync n f done = runAsync' n []
 -- | give a better estimate of both mean and standard deviation, but will
 -- | increase running time.
 benchAsyncWith
-  :: forall e a
+  :: forall e
    . Int
   -> (Eff (console :: CONSOLE | e) Unit -> Eff (console :: CONSOLE | e) Unit)
   -> Eff (console :: CONSOLE | e) Unit
@@ -161,7 +161,7 @@ benchAsyncWith n f done =
 -- | stddev = 494.82 μs
 -- | ```
 benchAsync
-  :: forall e a
+  :: forall e
    . (Eff (console :: CONSOLE | e) Unit -> Eff (console :: CONSOLE | e) Unit)
   -> Eff (console :: CONSOLE | e) Unit
   -> Eff (console :: CONSOLE | e) Unit
