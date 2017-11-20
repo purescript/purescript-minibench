@@ -1,7 +1,7 @@
 -- | This module provides the `bench` function, which prints a short summary
 -- | of the running times of a synchronous function to the console. It also
--- | provides the `benchAff` function, which prints a short summary of the
--- | running times of an asynchronous block to the console.
+-- | provides the `benchAsync` function, which prints a short summary of the
+-- | running times of an asynchronous function to the console.
 -- |
 -- | For benchmarking tasks which require finer accuracy, or graphs as output,
 -- | consider using `purescript-benchotron` instead.
