@@ -22,6 +22,10 @@ import Prelude hiding (min,max)
 -- | A wrapper around the Node `process.hrtime()` function.
 foreign import hrTime :: forall eff. EffFn1 eff (Array Int) (Array Int)
 
+-- | Force garbage collection.
+-- | Requires node to be run with the --force-gc flag.
+foreign import gc :: forall eff. Eff eff Unit
+
 foreign import toFixed :: Number -> String
 
 fromHrTime :: Array Int -> Number
@@ -38,6 +42,9 @@ withUnits t
 -- | Estimate the running time of a function and print a summary to the console,
 -- | specifying the number of samples to take. More samples will give a better
 -- | estimate of both mean and standard deviation, but will increase running time.
+-- |
+-- | To increase benchmark accuracy by forcing garbage collection before the
+-- | benchmark is run, node should be invoked with the '--expose-gc' flag.
 benchWith
   :: forall eff a
    . Int
@@ -48,6 +55,7 @@ benchWith n f = runST do
   sum2Ref <- newSTRef 0.0
   minRef <- newSTRef infinity
   maxRef <- newSTRef 0.0
+  gc
   forE 0 n \_ -> do
     t1 <- runEffFn1 hrTime [0, 0]
     t2 <- const (runEffFn1 hrTime t1) (f unit)
