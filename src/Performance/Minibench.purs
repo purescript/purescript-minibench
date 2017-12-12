@@ -7,6 +7,9 @@
 module Performance.Minibench
   ( bench
   , benchWith
+  , benchWith'
+  , BenchResult
+  , withUnits
   ) where
 
 import Control.Monad.Eff (Eff, forE)
@@ -50,7 +53,26 @@ benchWith
    . Int
   -> (Unit -> a)
   -> Eff (console :: CONSOLE | eff) Unit
-benchWith n f = runST do
+benchWith n f = do
+  res <- benchWith' n f
+  log ("mean   = " <> withUnits res.mean)
+  log ("stddev = " <> withUnits res.stdDev)
+  log ("min    = " <> withUnits res.min)
+  log ("max    = " <> withUnits res.max)
+
+type BenchResult = 
+  { mean :: Number
+  , stdDev :: Number
+  , min :: Number
+  , max :: Number
+  }
+
+benchWith'
+  :: forall eff a
+   . Int
+  -> (Unit -> a)
+  -> Eff eff BenchResult
+benchWith' n f = runST do
   sumRef <- newSTRef 0.0
   sum2Ref <- newSTRef 0.0
   minRef <- newSTRef infinity
@@ -73,10 +95,12 @@ benchWith n f = runST do
   let n'     = toNumber n
       mean   = sum / n'
       stdDev = sqrt ((sum2 - n' * mean * mean) / (n' - 1.0))
-  log ("mean   = " <> withUnits mean)
-  log ("stddev = " <> withUnits stdDev)
-  log ("min    = " <> withUnits min')
-  log ("max    = " <> withUnits max')
+  pure
+    { mean
+    , stdDev
+    , min: min'
+    , max: max'
+    }
 
 -- | Estimate the running time of a function and print a summary to the console,
 -- | by running the function 1000 times.
