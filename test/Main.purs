@@ -1,11 +1,12 @@
 module Test.Main where
 
 import Prelude
-import Control.Monad.Eff (Eff)
-import Control.Monad.Eff.Console (CONSOLE, log)
+
+import Effect (Effect)
+import Effect.Console (log)
 import Performance.Minibench (bench, benchWith)
 
-main :: forall e. Eff (console :: CONSOLE | e) Unit
+main :: Effect Unit
 main = do
   let loop 0 = 0
       loop n = loop (n - 1)
