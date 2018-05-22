@@ -12,22 +12,23 @@ module Performance.Minibench
   , withUnits
   ) where
 
-import Control.Monad.Eff (Eff, forE)
-import Control.Monad.Eff.Console (CONSOLE, log)
-import Control.Monad.Eff.Uncurried (EffFn1, runEffFn1)
-import Control.Monad.ST (modifySTRef, newSTRef, readSTRef, runST)
+import Prelude hiding (min,max)
+
 import Data.Int (toNumber)
+import Effect (Effect, forE)
+import Effect.Console (log)
+import Effect.Ref as Ref
+import Effect.Uncurried (EffectFn1, runEffectFn1)
 import Global (infinity)
 import Math (max, min, sqrt)
 import Partial.Unsafe (unsafeCrashWith)
-import Prelude hiding (min,max)
 
 -- | A wrapper around the Node `process.hrtime()` function.
-foreign import hrTime :: forall eff. EffFn1 eff (Array Int) (Array Int)
+foreign import hrTime :: EffectFn1 (Array Int) (Array Int)
 
 -- | Force garbage collection.
 -- | Requires node to be run with the --force-gc flag.
-foreign import gc :: forall eff. Eff eff Unit
+foreign import gc :: Effect Unit
 
 foreign import toFixed :: Number -> String
 
@@ -49,10 +50,10 @@ withUnits t
 -- | To increase benchmark accuracy by forcing garbage collection before the
 -- | benchmark is run, node should be invoked with the '--expose-gc' flag.
 benchWith
-  :: forall eff a
+  :: forall a
    . Int
   -> (Unit -> a)
-  -> Eff (console :: CONSOLE | eff) Unit
+  -> Effect Unit
 benchWith n f = do
   res <- benchWith' n f
   log ("mean   = " <> withUnits res.mean)
@@ -60,7 +61,7 @@ benchWith n f = do
   log ("min    = " <> withUnits res.min)
   log ("max    = " <> withUnits res.max)
 
-type BenchResult = 
+type BenchResult =
   { mean :: Number
   , stdDev :: Number
   , min :: Number
@@ -68,30 +69,30 @@ type BenchResult =
   }
 
 benchWith'
-  :: forall eff a
+  :: forall a
    . Int
   -> (Unit -> a)
-  -> Eff eff BenchResult
-benchWith' n f = runST do
-  sumRef <- newSTRef 0.0
-  sum2Ref <- newSTRef 0.0
-  minRef <- newSTRef infinity
-  maxRef <- newSTRef 0.0
+  -> Effect BenchResult
+benchWith' n f = do
+  sumRef <- Ref.new 0.0
+  sum2Ref <- Ref.new 0.0
+  minRef <- Ref.new infinity
+  maxRef <- Ref.new 0.0
   gc
   forE 0 n \_ -> do
-    t1 <- runEffFn1 hrTime [0, 0]
-    t2 <- const (runEffFn1 hrTime t1) (f unit)
+    t1 <- runEffectFn1 hrTime [0, 0]
+    t2 <- const (runEffectFn1 hrTime t1) (f unit)
     let ns     = fromHrTime t2
         square = ns * ns
-    _ <- modifySTRef sumRef (_ + ns)
-    _ <- modifySTRef sum2Ref (_ + square)
-    _ <- modifySTRef minRef (_ `min` ns)
-    _ <- modifySTRef maxRef (_ `max` ns)
+    _ <- Ref.modify (_ + ns) sumRef
+    _ <- Ref.modify (_ + square) sum2Ref
+    _ <- Ref.modify (_ `min` ns) minRef
+    _ <- Ref.modify (_ `max` ns) maxRef
     pure unit
-  sum <- readSTRef sumRef
-  sum2 <- readSTRef sum2Ref
-  min' <- readSTRef minRef
-  max' <- readSTRef maxRef
+  sum <- Ref.read sumRef
+  sum2 <- Ref.read sum2Ref
+  min' <- Ref.read minRef
+  max' <- Ref.read maxRef
   let n'     = toNumber n
       mean   = sum / n'
       stdDev = sqrt ((sum2 - n' * mean * mean) / (n' - 1.0))
@@ -116,8 +117,5 @@ benchWith' n f = runST do
 -- | mean   = 414.00 μs
 -- | stddev = 494.82 μs
 -- | ```
-bench
-  :: forall eff a
-   . (Unit -> a)
-  -> Eff (console :: CONSOLE | eff) Unit
+bench :: forall a. (Unit -> a) -> Effect Unit
 bench = benchWith 1000
