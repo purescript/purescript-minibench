@@ -7,6 +7,9 @@
 module Performance.Minibench
   ( bench
   , benchWith
+  , benchWith'
+  , BenchResult
+  , withUnits
   ) where
 
 import Prelude hiding (min,max)
@@ -46,8 +49,31 @@ withUnits t
 -- |
 -- | To increase benchmark accuracy by forcing garbage collection before the
 -- | benchmark is run, node should be invoked with the '--expose-gc' flag.
-benchWith :: forall a. Int -> (Unit -> a) -> Effect Unit
+benchWith
+  :: forall a
+   . Int
+  -> (Unit -> a)
+  -> Effect Unit
 benchWith n f = do
+  res <- benchWith' n f
+  log ("mean   = " <> withUnits res.mean)
+  log ("stddev = " <> withUnits res.stdDev)
+  log ("min    = " <> withUnits res.min)
+  log ("max    = " <> withUnits res.max)
+
+type BenchResult =
+  { mean :: Number
+  , stdDev :: Number
+  , min :: Number
+  , max :: Number
+  }
+
+benchWith'
+  :: forall a
+   . Int
+  -> (Unit -> a)
+  -> Effect BenchResult
+benchWith' n f = do
   sumRef <- Ref.new 0.0
   sum2Ref <- Ref.new 0.0
   minRef <- Ref.new infinity
@@ -70,10 +96,12 @@ benchWith n f = do
   let n'     = toNumber n
       mean   = sum / n'
       stdDev = sqrt ((sum2 - n' * mean * mean) / (n' - 1.0))
-  log ("mean   = " <> withUnits mean)
-  log ("stddev = " <> withUnits stdDev)
-  log ("min    = " <> withUnits min')
-  log ("max    = " <> withUnits max')
+  pure
+    { mean
+    , stdDev
+    , min: min'
+    , max: max'
+    }
 
 -- | Estimate the running time of a function and print a summary to the console,
 -- | by running the function 1000 times.
