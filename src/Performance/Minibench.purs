@@ -19,7 +19,7 @@ import Effect (Effect, forE)
 import Effect.Console (log)
 import Effect.Ref as Ref
 import Effect.Uncurried (EffectFn1, runEffectFn1)
-import Global (infinity)
+import Data.Number (infinity)
 import Math (max, min, sqrt)
 import Partial.Unsafe (unsafeCrashWith)
 
