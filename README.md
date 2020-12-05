@@ -1,14 +1,14 @@
 # purescript-minibench
 
 [![Latest release](http://img.shields.io/github/release/purescript/purescript-minibench.svg)](https://github.com/purescript/purescript-minibench/releases)
-[![Build Status](https://travis-ci.org/purescript/purescript-minibench.svg?branch=master)](https://travis-ci.org/purescript/purescript-minibench)
+[![Build status](https://github.com/purescript/purescript-minibench/workflows/CI/badge.svg?branch=master)](https://github.com/purescript/purescript-minibench/actions?query=workflow%3ACI+branch%3Amaster)
 
 A minimal benchmarking library
 
 ## Installation
 
 ```
-bower install purescript-minibench
+spago install minibench
 ```
 
 ## Documentation
