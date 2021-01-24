@@ -5,22 +5,25 @@ Notable changes to this project are documented in this file. The format is based
 ## [Unreleased]
 
 Breaking changes:
+- Added support for PureScript 0.14 and dropped support for all previous versions (#14)
+  This change includes dropping the deprecated `globals` dependency and switching to the same functions now exported from `numbers`.
 
 New features:
 
 Bugfixes:
 
 Other improvements:
+- Migrated CI to GitHub Actions and updated installation instructions to use Spago (#15)
+- Added a changelog and pull request template (#18)
 
 ## [v2.0.0](https://github.com/purescript/purescript-minibench/releases/tag/v2.0.0) - 2018-05-23
 
-Updated for PureScript 0.12
+- Updated for PureScript 0.12
 
 ## [v1.0.1](https://github.com/purescript/purescript-minibench/releases/tag/v1.0.1) - 2017-11-24
 
-- Run garbage collection before benchmarking. Use the `--force-gc` flag in Node to see the effect of this. (@matthewleon)
+- Now runs garbage collection before benchmarking. Use the `--force-gc` flag in Node to see the effect of this. (@matthewleon)
 
 ## [v1.0.0](https://github.com/purescript/purescript-minibench/releases/tag/v1.0.0) - 2017-06-05
 
-Initial versioned release
-
+- Initial versioned release
