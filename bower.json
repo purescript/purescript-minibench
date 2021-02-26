@@ -20,7 +20,7 @@
     "purescript-effect": "^3.0.0",
     "purescript-integers": "^5.0.0",
     "purescript-math": "^3.0.0",
-    "purescript-numbers": "^7.0.0",
+    "purescript-numbers": "^8.0.0",
     "purescript-partial": "^3.0.0",
     "purescript-prelude": "^5.0.0",
     "purescript-refs": "^5.0.0"
