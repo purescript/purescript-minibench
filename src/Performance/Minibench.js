@@ -1,11 +1,11 @@
 "use strict";
 
-exports.hrTime = process.hrtime;
+export var hrTime = process.hrtime;
 
-exports.gc = function() {
+export function gc() {
   global.gc && global.gc();
-};
+}
 
-exports.toFixed = function(n) {
+export function toFixed(n) {
   return n.toFixed(2);
-};
+}
