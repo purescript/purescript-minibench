@@ -1,5 +1,3 @@
-"use strict";
-
 export const hrTime = process.hrtime;
 
 export function gc() {
