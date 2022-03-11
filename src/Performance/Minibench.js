@@ -1,6 +1,6 @@
 "use strict";
 
-export var hrTime = process.hrtime;
+export const hrTime = process.hrtime;
 
 export function gc() {
   global.gc && global.gc();
