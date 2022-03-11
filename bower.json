@@ -16,13 +16,13 @@
     "package.json"
   ],
   "dependencies": {
-    "purescript-console": "^5.0.0",
-    "purescript-effect": "^3.0.0",
-    "purescript-integers": "^5.0.0",
-    "purescript-math": "^3.0.0",
-    "purescript-numbers": "^8.0.0",
-    "purescript-partial": "^3.0.0",
-    "purescript-prelude": "^5.0.0",
-    "purescript-refs": "^5.0.0"
+    "purescript-console": "master",
+    "purescript-effect": "master",
+    "purescript-integers": "master",
+    "purescript-math": "master",
+    "purescript-numbers": "master",
+    "purescript-partial": "master",
+    "purescript-prelude": "master",
+    "purescript-refs": "master"
   }
 }
