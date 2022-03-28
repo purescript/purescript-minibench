@@ -12,6 +12,7 @@ New features:
 Bugfixes:
 
 Other improvements:
+- Drop `math` dependency; update imports (#23 by @JordanMartinez)
 
 ## [v3.0.0](https://github.com/purescript/purescript-minibench/releases/tag/v3.0.0) - 2021-02-26
 

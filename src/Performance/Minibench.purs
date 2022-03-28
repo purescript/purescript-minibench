@@ -19,8 +19,7 @@ import Effect (Effect, forE)
 import Effect.Console (log)
 import Effect.Ref as Ref
 import Effect.Uncurried (EffectFn1, runEffectFn1)
-import Data.Number (infinity)
-import Math (max, min, sqrt)
+import Data.Number (infinity, max, min, sqrt)
 import Partial.Unsafe (unsafeCrashWith)
 
 -- | A wrapper around the Node `process.hrtime()` function.
