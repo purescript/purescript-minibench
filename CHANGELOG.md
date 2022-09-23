@@ -11,6 +11,7 @@ New features:
 Bugfixes:
 
 Other improvements:
+- Update FFI to use a more direct and portable convention (#25 by @natefaubion)
 
 ## [v4.0.0](https://github.com/purescript/purescript-minibench/releases/tag/v4.0.0) - 2022-04-27
 

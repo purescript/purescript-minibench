@@ -20,20 +20,15 @@ import Effect.Console (log)
 import Effect.Ref as Ref
 import Effect.Uncurried (EffectFn1, runEffectFn1)
 import Data.Number (infinity, max, min, sqrt)
-import Partial.Unsafe (unsafeCrashWith)
 
--- | A wrapper around the Node `process.hrtime()` function.
-foreign import hrTime :: EffectFn1 (Array Int) (Array Int)
+-- | Returns the number of nanoseconds it takes to evaluate the given closure.
+foreign import timeNs :: forall a. EffectFn1 (Unit -> a) Number
 
 -- | Force garbage collection.
 -- | Requires node to be run with the --force-gc flag.
 foreign import gc :: Effect Unit
 
 foreign import toFixed :: Number -> String
-
-fromHrTime :: Array Int -> Number
-fromHrTime [s, ns] = toNumber s * 1.0e9 + toNumber ns
-fromHrTime _ = unsafeCrashWith "fromHrTime: unexpected result from process.hrtime()"
 
 withUnits :: Number -> String
 withUnits t
@@ -79,10 +74,8 @@ benchWith' n f = do
   maxRef <- Ref.new 0.0
   gc
   forE 0 n \_ -> do
-    t1 <- runEffectFn1 hrTime [0, 0]
-    t2 <- const (runEffectFn1 hrTime t1) (f unit)
-    let ns     = fromHrTime t2
-        square = ns * ns
+    ns <- runEffectFn1 timeNs f
+    let square = ns * ns
     _ <- Ref.modify (_ + ns) sumRef
     _ <- Ref.modify (_ + square) sum2Ref
     _ <- Ref.modify (_ `min` ns) minRef
