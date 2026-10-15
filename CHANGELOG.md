@@ -6,7 +6,7 @@ Notable changes to this project are documented in this file. The format is based
 
 Other improvements:
 
-- Migrate from Bower/Pulp to Spago and update CI, linting, and formatting.
+- Migrate from Bower/Pulp to Spago and update CI, linting, and formatting (#26 by @thomashoneyman)
 
 ## [v4.0.1](https://github.com/purescript/purescript-minibench/releases/tag/v4.0.1) - 2022-09-23
 
