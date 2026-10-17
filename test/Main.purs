@@ -9,8 +9,9 @@ import Performance.Minibench (bench, benchWith)
 main :: Effect Unit
 main = do
   let
-    loop 0 = 0
-    loop n = loop (n - 1)
+    loop n = case n of
+      0 -> 0
+      _ -> loop (n - 1)
 
   log "loop 10"
   benchWith 1000000 \_ -> loop 10
