@@ -12,14 +12,14 @@ module Performance.Minibench
   , withUnits
   ) where
 
-import Prelude hiding (min,max)
+import Prelude hiding (max, min)
 
 import Data.Int (toNumber)
+import Data.Number (infinity, max, min, sqrt)
 import Effect (Effect, forE)
 import Effect.Console (log)
 import Effect.Ref as Ref
 import Effect.Uncurried (EffectFn1, runEffectFn1)
-import Data.Number (infinity, max, min, sqrt)
 
 -- | Returns the number of nanoseconds it takes to evaluate the given closure.
 foreign import timeNs :: forall a. EffectFn1 (Unit -> a) Number
@@ -85,9 +85,10 @@ benchWith' n f = do
   sum2 <- Ref.read sum2Ref
   min' <- Ref.read minRef
   max' <- Ref.read maxRef
-  let n'     = toNumber n
-      mean   = sum / n'
-      stdDev = sqrt ((sum2 - n' * mean * mean) / (n' - 1.0))
+  let
+    n' = toNumber n
+    mean = sum / n'
+    stdDev = sqrt ((sum2 - n' * mean * mean) / (n' - 1.0))
   pure
     { mean
     , stdDev

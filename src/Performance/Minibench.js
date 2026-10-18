@@ -6,7 +6,7 @@ export function timeNs(k) {
 }
 
 export function gc() {
-  global.gc && global.gc();
+  if (global.gc) global.gc();
 }
 
 export function toFixed(n) {
